@@ -1,0 +1,185 @@
+<!DOCTYPE html><html xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]--><script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script><script type="text/javascript" src="http://www.topquadrant.com/docs/toc.js"></script><link href="http://www.topquadrant.com/docs/tqdoc.css" type="text/css" rel="stylesheet">
+      <title property="dc:title">Enterprise Vocabulary Net Installation Guide: Enterprise Vocabulary Net Configuration</title>
+   </head>
+   <body>
+      <p><a href="index.html" class="containingBookLink">Enterprise Vocabulary Net Installation Guide</a></p>
+      <hr>
+      <h1>Enterprise Vocabulary Net Configuration</h1>
+      <section id="introduction">
+         <p>Prior to installation of Enterprise Vocabulary Net, there are a few configuration issues to consider, as described in the following sections.</p>
+      </section>
+      <section>
+         <h2>Application Server Configuration</h2>
+         <p>The following table shows the currently supported platforms for Enterprise Vocabulary Net. For other configurations please contact TopQuadrant. (Other operating systems are not supported.)</p>
+         <table>
+            <thead>
+               <tr>
+                  <th>Operating System</th>
+                  <th>Kernel</th>
+                  <th>Servlet Container</th>
+                  <th>JVM</th>
+               </tr>
+            </thead>
+            <tbody>
+               <tr>
+                  <td>Red Hat Enterprise Linux v5, 64 bit</td>
+                  <td>2.6 or higher kernel</td>
+                  <td>Apache Tomcat 6.x***</td>
+                  <td>Sun Java 6 update 21 or higher</td>
+               </tr>
+               <tr>
+                  <td>Windows*, 64 bit</td>
+                  <td></td>
+                  <td>Apache Tomcat 6.x***</td>
+                  <td>Sun Java 6 update 21 or higher</td>
+               </tr>
+               <tr>
+                  <td>Ubuntu 9.04**</td>
+                  <td>2.6 or higher kernel</td>
+                  <td>Apache Tomcat 6.x***</td>
+                  <td>Sun Java 6 update 21 or higher</td>
+               </tr>
+            </tbody>
+         </table>
+         <p><sup>* Please contact TopQuadrant concerning use of Windows Server 2008.<br>
+               ** Ubuntu 9.10 is known not to work.<br>
+               *** Tomcat 6.0.28 or greater provides better memory leak protection than earlier versions and is recommended. Earlier versions
+               of Java/Tomcat 6 are expected to work but are known to have memory leaks that affect some Enterprise Vocabulary Net functions.</sup></p>
+         <p>Details and suggested configurations for <a href="#tomcatUnderLinux">Linux</a> and <a href="#c20">Windows 2003</a> are included in this document.
+         </p>
+      </section>
+      <section>
+         <h2>Suggested Java Configuration</h2>
+         <div class="admon"><img align="left" vspace="0px" hspace="30px" width="60px" src="img/icon-tip.jpg"><p class="p">If you are using both TopBraid Live and TopBraid Enterprise Vocabulary Net on the same server, we recommend that you run each
+               in a separate JVM by running them with separate instances of Tomcat. 
+            </p>
+         </div>
+         <p>
+            It is necessary to ensure that you have adequate physical memory
+            to run Enterprise Vocabulary Net and that you have configured your Web Application
+            Server to use it.
+            
+         </p>
+         <p>
+            Adequate heap space must be configured, and, when using Sun's JVM, adequate Permanent Generation space needs to be allocated.
+            This 
+            requires setting parameters for the JVM.  Using the Oracle/Sun JVM the recommended JAVA_OPTS  are:
+            
+         </p><pre class="pre">-XX:MaxPermSize=256m 
+-XX:PermSize=256m
+-Xmx4g
+      </pre><p>Note that the XX parameters use the equals sign but Xmx does not. The 4g value for Java heap space (-Xmx) represents a minimum
+            allocation for EVN servers.  A value such as <code>-Xmx=5120m</code> (any integer 
+            value is acceptable, not just increments of 1204) would be expected for most servers, provided adequate physical memory is
+            available. 
+         </p>
+         <p>These parameters must be assigned on the JVM running the Web Application Server (e.g. Tomcat). If this figure is too low,
+            then the most likely 
+            error is a HTTP 500 server error on the first page accessed after an Equinox reset, or after a EVN nightly restart. See the installation instructions 
+            below for your operating system for more details concerning how to set the parameters.
+         </p>
+         <p>If you are using Tomcat and plan to deploy and undeploy EVN using the manager application or API, add the following JAVA_OPTS as well:</p><pre class="pre">
+-XX:+CMSClassUnloadingEnabled
+-XX:+CMSPermGenSweepingEnabled 
+</pre></section>
+      <section>
+         <h2>Other Issues to Consider Prior to Installation</h2>
+         <p>The following issues may need configuration on your system.</p>
+         <!-- removed 2012-04-11 srh
+This configuration is done by editing the <code>web.xml</code> file
+used for TopBraid Live.
+</p>
+<p>The <code>web.xml</code> file from the TBL 
+ <code>tbl.war</code> web application archive file
+is included. This can be edited, and,
+at the appropriate step below, copied to the correct location.
+
+</p>
+<section><h3>Workspace Location</h3>
+<p>TopBraid Live requires a workspace compatible with the Eclipse Equinox implementation of the OSGi R4 framework. (This is similar to the TopBraid Composer workspace.)
+ The default location, which may be modified in TopBraid Live's <code>web.xml</code> file,  is <code>/var/lib/ontologies</code>.
+This workspace location  must be writable by the process running the Web Application Server.
+</p></section>
+-->
+         <section>
+            <h3>Security</h3>
+            <!-- <p>In order to configure security, Tomcat must be configured to connect to an 
+authentication realm to provide users and their roles. One such realm 
+would be a connector to LDAP.  
+With no such configuration all TopBraid Live  operations, including administrative ones,
+are available to anyone with network access to the server.
+</p>
+<p>Authentication is also configured by appropriate modifications to 
+TopBraid Live's <code>web.xml</code> file.
+</p>
+-->
+            <p>The Apache Tomcat $TOMCAT_HOME/conf/tomcat-users.xml file stores contain user IDs and passwords.  Unless you've configured
+               Tomcat to use some other authentication method (LDAP, Kerberos, various single-signon approaches), you can use a user ID and
+               password from this file.
+            </p>
+            <p>Tomcat installations (and J2EE servers in general) generally assume that authentication occur from some outside source.  Out
+               of the box, Tomcat is configured to use tomcat-users.xml to load authentication information into memory.  If, for example,
+               LDAP is used instead, then a user trying to log into a Tomcat application will send information from the sign-in (either Basic
+               or Form in EVN) to the authentication service, which responds with role/user id information. This then placed in Tomcat memory just like
+               it is done when using tomcat-users.xml.
+            </p>
+         </section>
+         <section>
+            <h3>Internet Explorer and SSL</h3>
+            <p>For your users using TopBraid applications from Internet Explorer over SSL, certain settings in your httpd.conf file will
+               ensure that the application's behavior will be consistent with its use from other browsers. The following shows the end of
+               a VirtualHost element in an httpd.conf file, with the IE-related lines in bold.
+            </p><pre class="pre">
+   SSLEngine On
+
+   SSLCipherSuite ALL:!ADH:!EXPORT:!SSLv2:RC4+RSA:+HIGH:+MEDIUM
+   SSLProtocol all -SSLv2
+
+   SSLCertificateFile    /etc/ssl/certs/server.crt
+   SSLCertificateKeyFile /etc/ssl/private/server.key
+
+   SSLCertificateChainFile /etc/ssl/ca/sub.class1.server.ca.pem
+   SSLCACertificateFile    /etc/ssl/ca/ca.pem
+   <strong>
+   SetEnvIf User-Agent ".*MSIE.*" is_ie nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+
+   #Needed for IE Flash image loading bug
+   Header set Cache-Control no-store env=is_ie
+   Header unset Pragma env=is_ie
+   </strong>
+&lt;/VirtualHost&gt;
+</pre><p>The SetEnvIf line sets a series of environment variables to true for user agents with MSIE in their name, and the two Header
+               lines adjust the HTTP header that will be sent to the browsers.
+            </p>
+         </section>
+         <section>
+            <h3>J2EE Memory Management Issues</h3>
+            <p>Many J2EE apps suffer memory leaks.
+               TopQuadrant's continuous integration server checks for memory leaks in Enterprise Vocabulary Net
+               and such problems are regularly addressed.
+               However, since your usage pattern differs from TopQuadrant's test scripts,
+               you may have problems that have gone undetected before.
+               These are noticeable when you stop and restart from Tomcat's admin module; 
+               after stopping Enterprise Vocabulary Net, wait five minutes and then
+               select the find leaks option from Tomcat's admin page.
+            </p>
+            <p>The most severe leaks make it impossible to cleanly shutdown Tomcat
+               and a "kill -KILL" command may be necessary.
+               If problems continue, the most effective defect report is to send TopQuadrant support a memory dump of your Tomcat server.
+            </p>
+            <p>To make one, first find the process ID of your Tomcat process, and then issue the following command:</p><pre>
+jmap -dump:live,format=b,file=TB-dump.bin $PID
+</pre><p>Then, compress the file TB-dump.bin and make it available to TopQuadrant support.</p>
+         </section>
+      </section>
+      <div class="hr"></div>
+      <hr>
+      <p class="footer" property="dc:rights">Copyright 2013 <a href="http://www.topquadrant.com">TopQuadrant</a>, Inc., All Rights Reserved.
+      </p>
+   </body>
+</html>

@@ -1,0 +1,361 @@
+
+<!-- Note that this  --><!DOCTYPE html><html xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]--><script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script><script type="text/javascript" src="http://www.topquadrant.com/docs/toc.js"></script><link href="http://www.topquadrant.com/docs/tqdoc.css" type="text/css" rel="stylesheet">
+      <title property="dc:title">Enterprise Vocabulary Net Installation Guide: LDAP Configuration</title>
+   </head>
+   <body>
+      <p><a href="index.html" class="containingBookLink">Enterprise Vocabulary Net Installation Guide</a></p>
+      <hr>
+      <h1>LDAP Configuration</h1>
+      <section id="introduction">
+         <p>This chapter describes the use of Enterprise Vocabulary Net with LDAP authentication.</p>
+      </section>
+      <section>
+         <h2 class="topictitle2">Integration Instructions</h2>
+         <p>Authentication is the process by which users log on to Enterprise Vocabulary Net.
+            It is possible, but not advised, to run Enterprise Vocabulary Net without authentication.
+            In this case, all users get full administrative privileges.
+            
+         </p>
+         <p>
+            For authentication, the services of the Web Application Server such as Tomcat
+            are used. 
+            This is intended to help implementation of policies such as single sign-on.
+            Enterprise Vocabulary Net provides no further features for single sign-on. If this is
+            a policy mandated for your environment, first find some other J2EE based service
+            and understand which Web Application Server they are using, and how they authenticate
+            users in accordance with the single sign-on policy. Then contact TopQuadrant
+            with this information for advice as to how to configure Enterprise Vocabulary Net in a similar way. 
+            
+         </p>
+         <p>A popular authentication method for both Linux and Microsoft's Active Directory is LDAP. This section provides instructions
+            for integration Enterprise Vocabulary Net in Tomcat
+            with LDAP in Linux and Active Directory in Windows Server 2003.
+         </p>
+         <section>
+            <h3 class="topictitle3">LDAP Configuration within Tomcat</h3>
+            <p>These instructions cover the configuration of LDAP within Tomcat.
+               With a different Web Application Server, there may be some differences.
+               Also note that the exact format depends on your LDAP configuration.
+               The initial step in these instructions is to start an LDAP service. Normally
+               this is not required, because you are configuring Tomcat and Enterprise Vocabulary Net to
+               use a pre-existing LDAP service.
+               
+            </p>
+            <section>
+               <h4 class="sectiontitle">Identifying/Creating a Group and at Least One User in That Group</h4>
+               <p>In the sample configuration routine shown below, we will set the security to permit a specific group to access Enterprise Vocabulary Net.
+                  This group needs a name, which is configured within LDAP.
+                  You may already have an appropriate group.
+                  
+               </p>
+            </section>
+            <section>
+               <h4 class="sectiontitle">Configuring Tomcat to Use LDAP</h4>
+               <p>Next, we need to configure tomcat to connect to LDAP. This is specified in this document :
+                  <a href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html#JNDIRealm" target="_blank">
+                     http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html#JNDIRealm
+                     </a></p>
+               <p>This is the difficult step. 
+                  It requires adding an entry to <code>server.xml</code>, found in the <code>conf</code>
+                  folder for Tomcat.
+                  For our example, the entry is as follows:
+               </p><pre class="pre">
+&lt;Realm   className="org.apache.catalina.realm.JNDIRealm" debug="99"
+   connectionURL="ldap://localhost:389"
+   userPattern="uid={0},ou=people,dc=tqinc,dc=info"
+   roleBase="ou=groups,dc=tqinc,dc=info"
+   roleName="cn"
+   roleSearch="(memberUid={1})"
+   /&gt;
+</pre><p>inside of the <tt>Engine</tt> element.
+                  Note that in this expression, <code>{0}</code> and <code>{1}</code> both stand in for the username 
+                  (they are written literally as <code>{0}</code><code>{1}</code> in the web.xml file), 
+                  but the actual expressions such as 
+                  <code>uid={0},ou=people,dc=tqinc,dc=info</code> will be different depending on your LDAP service.
+                  
+               </p>
+               <p>For reference, this is for group configuration that looks like this in
+                  LDAP:
+                  
+               </p><pre class="pre">
+keefe@keefetq:~$ ldapsearch -xLLL -b "dc=tqinc,dc=info" -s sub "(memberUid=keefe)"
+dn: cn=acme,ou=groups,dc=tqinc,dc=info
+objectClass: posixGroup
+cn: acme
+gidNumber: 10001
+description: Group account
+memberUid: keefe
+</pre><p>If your LDAP directory is setup in a straightforward way, 
+                  it should be easy to modify the search expression appropriately.
+                  However, you may need assistance from someone who knows your LDAP system. 
+                  
+               </p>
+               <p>Three pieces of information are needed:
+                  
+               </p>
+               <ol>
+                  <li>
+                     
+                     A base pattern to identify groups in LDAP, (in this case:  
+                     <code>ou=groups,dc=tqinc,dc=info</code>).
+                     
+                  </li>
+                  <li>
+                     A property at which the rolename we will use in securing Enterprise Vocabulary Net may be found, in this case: <code>cn</code></li>
+                  <li>
+                     A search filter that indicates role membership, in this case : 
+                     <code>(memberUid={1})</code> where <code>{1}</code> is the username.
+                     
+                     
+                  </li>
+               </ol>
+            </section>
+         </section>
+         <section>
+            <h3 class="topictitle3">Active Directory Integration within Tomcat</h3>
+            <p>These instructions concern integrating Active Directory within Tomcat using 
+               the LDAP protocol.
+               With a different Web Application Server, there may be some differences.
+               Also note that the exact format depends on your LDAP configuration.
+               The initial step in these instructions is to start the Active Directory. Normally
+               this is not required, since you are configuring Tomcat and Enterprise Vocabulary Net to
+               use a pre-existing service.
+               
+            </p>
+            <section>
+               <h4 class="sectiontitle">Pre-requisites</h4>
+               <p>A version of Windows with Active Directory, Java, and Tomcat.
+                  We use Windows 2003 server (R2 with SP2), Java 1.6, Tomcat 6.0. 
+                  Details in the instructions will differ for different OS's and software versions.
+                  Note: Enterprise Vocabulary Net is not supported on Java 1.5.
+                  
+               </p>
+            </section>
+            <section>
+               <h4 class="sectiontitle">Install / Configure Active Directory</h4>
+               <p>This step is described in <a href="installation.html#activedirinstall">Active Directory Installation and Configuration</a>.
+                  
+               </p>
+            </section>
+            <section>
+               <h4 class="sectiontitle">Populate LDAP</h4>
+               <p>We will set the security to permit a specific group of users to access Enterprise Vocabulary Net.
+                  This group needs a name, which is configured within LDAP.
+                  You may already have an appropriate group.
+                  
+               </p>
+               <ol>
+                  <li>
+                     Create users in Active Directory for Enterprise Vocabulary Net use, 
+                     if existing users need to use the Enterprise Vocabulary Net then ignore this step.
+                     
+                  </li>
+                  <li>
+                     Create a TopBraid EVN group named <strong>acme</strong>
+                     Associated users with this group in Active Directory using the wizard.
+                     
+                  </li>
+               </ol>
+            </section>
+            <section>
+               <h4 class="sectiontitle">Configuring Tomcat to Use LDAP</h4>
+               <p>Next, we need to configure tomcat to connect to ldap. This is specified in this document :
+                  <a href="http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html#JNDIRealm" target="_blank">
+                     http://tomcat.apache.org/tomcat-6.0-doc/realm-howto.html#JNDIRealm
+                     </a></p>
+               <p>This is the difficult step.
+                  It requires adding an entry to <code>server.xml</code>, found in the <code>conf</code>
+                  
+                  folder for Tomcat.
+                  For our example, the entry is as follows:
+               </p><pre class="pre">
+	&lt;Realm className="org.apache.catalina.realm.JNDIRealm"
+
+		connectionURL="ldap://localhost:3268"
+		authentication="simple"
+		referrals="follow"
+
+		connectionName="jeremy@tblive.tqinc.info"
+		connectionPassword="enter password here"
+
+		userSearch="(sAMAccountName={0})"
+		userBase="CN=Users,DC=tblive,DC=tqinc,DC=info"
+		userSubtree="true"
+
+		roleSearch="(member={0})"
+		roleName="cn"
+		roleSubtree="true"
+		roleBase="CN=Users,DC=tblive,DC=tqinc,DC=info"
+
+		debug="99"
+	/&gt;
+</pre><p>inside of the <tt>Engine</tt> element.
+                  
+               </p>
+               <p>In the <em>userSearch</em> expression, <code>{0}</code> stands for the username
+                  as typed by the end-user, whereas in the <em>roleSearch</em> expression, <code>{0}</code>
+                  
+                  stands for the distinguished name found from the user look up.
+                  (These are written literally as <code>{0}</code> in the server.xml file),
+                  but the actual expressions such as
+                  <code>(sAMAccountName={0})</code> and <code>CN=Users,DC=tblive,DC=tqinc,DC=info</code>
+                  will be different depending on your LDAP service.
+                  With Active Directory, <code>(sAMAccountName={0})</code> 
+                  and <code>roleSearch="(member={0})"</code> should generally be correct.
+                  
+               </p>
+               <p>If your LDAP directory is setup in a straightforward way,
+                  it should be easy to modify the search expression appropriately.
+                  However, you may need assistance from someone who knows your LDAP system.
+                  
+               </p>
+               <p>Three pieces of information are needed:
+                  
+               </p>
+               <ol>
+                  <li>
+                     A base pattern to identify groups in ldap, (in this case:
+                     <code>CN=Users,DC=tblive,DC=tqinc,DC=info</code>).
+                     
+                  </li>
+                  <li>
+                     A property at which the rolename we will use in securing Enterprise Vocabulary Net may be found, in this case: <code>cn</code></li>
+                  <li>
+                     A search filter that indicates role membership, in this case :
+                     <code>(member={0})</code> where <code>{0}</code> is the distinguishedName (and {1} is the username).
+                     
+                  </li>
+               </ol>
+               <p>This can also be seen using an LDAP explorer tool something similar to
+                  <a href="http://www.jxplorer.org/" target="_blank">JXplorer</a></p>
+               <p>For reference, the screen-shot below shows how the Active Directory group configuration looks like in JXplorer:</p>
+               <p>Connecting to LDAP:</p><img src="img/connectingLDAP.jpg"><p>User record for user Scott:</p><img src="img/userRecord.jpg"><p>Group record belonging to user Scott:</p><img src="img/groupRecord.jpg"></section>
+         </section>
+         <section>
+            <h3 class="topictitle3">Configuring Enterprise Vocabulary Net to Use LDAP</h3>
+            <p>Finally, add a security constraint to Enterprise Vocabulary Net in the <code>web.xml file:
+                  </code></p><pre class="pre">
+&lt;security-constraint&gt;
+  &lt;display-name&gt;Example Security Constraint&lt;/display-name&gt;
+
+  &lt;web-resource-collection&gt;
+      &lt;web-resource-name&gt;Protected Area&lt;/web-resource-name&gt;
+&lt;!-- Define the context-relative URL(s) to be protected --&gt; 
+      &lt;url-pattern&gt;/*&lt;/url-pattern&gt;
+&lt;!-- If you list http methods, only those methods are protected --&gt;
+      &lt;http-method&gt;DELETE&lt;/http-method&gt;
+
+      &lt;http-method&gt;GET&lt;/http-method&gt;
+      &lt;http-method&gt;POST&lt;/http-method&gt;
+      &lt;http-method&gt;PUT&lt;/http-method&gt;
+  &lt;/web-resource-collection&gt;
+
+  &lt;auth-constraint&gt;
+&lt;!-- Anyone with one of the listed roles may access this area --&gt;
+      &lt;role-name&gt;acme&lt;/role-name&gt;
+  &lt;/auth-constraint&gt;
+&lt;/security-constraint&gt;
+
+&lt;!-- Default login configuration uses basic authentication --&gt;
+
+&lt;login-config&gt;
+  &lt;auth-method&gt;BASIC&lt;/auth-method&gt;
+  &lt;realm-name&gt;TopBraid&lt;/realm-name&gt;
+&lt;/login-config&gt;
+       
+&lt;!-- Security roles referenced by this web application --&gt;
+
+&lt;security-role&gt;
+  &lt;role-name&gt;acme&lt;/role-name&gt;
+&lt;/security-role&gt;
+</pre></section>
+      </section>
+      <section>
+         <h2 class="topictitle2">Installing LDAP and/or Active Directory</h2>
+         <p>For most Enterprise Vocabulary Net installations, there will already
+            be an existing LDAP or Active Directory installation for authentication.
+            If not, the most straightforward way to add authentication
+            within Tomcat
+            is with a <a href="http://tomcat.apache.org/tomcat-6.0-doc/config/realm.html" target="_blank">Memory Based Realm</a>, 
+            but, as the Tomcat documentation describes, this "is NOT intended for production use. "
+            
+         </p>
+         <p>
+            If this is insufficient, TopQuadrant  provides simple guides for installing LDAP in Linux and Active Directory in Windows
+            Server 2003.
+            
+         </p>
+      </section>
+      <section>
+         <h2 class="topictitle2">Starting an LDAP Service in Linux</h2>
+         <p>This is intended as a quick guide.
+            More detailed instructions can be found elsewhere.
+            
+         </p>
+         <ol>
+            <li>Install LDAP. For an example of installation documentation, see the documentation for the 
+               <a href="https://help.ubuntu.com/community/OpenLDAPServer" target="_blank">
+                  Ubuntu OpenLDAP Server</a>.
+               
+            </li>
+            <li>
+               Configure LDAP by running through the setup wizard and setting up a domain name and related information. 
+               For example:
+               <pre class="pre">
+domain = tqinc.info
+organization name = tq
+</pre></li>
+            <li>
+               <p>Populate LDAP</p>
+               <p>The example below, which uses the ldapadd utility, is based Ubuntu's OpenLDAP configuration guide, replacing all example.com
+                  
+                  references with the domain specified above: tqinc.info. 
+               </p><pre class="pre">
+keefe@keefetq:~$ ldapadd -x -D cn=admin,dc=tqinc,dc=info -W -f test.ldif 
+Enter LDAP Password:
+adding new entry "ou=people,dc=tqinc,dc=info"
+adding new entry "ou=groups,dc=tqinc,dc=info"
+adding new entry "uid=john,ou=people,dc=tqinc,dc=info"
+adding new entry "cn=example,ou=groups,dc=tqinc,dc=info"
+</pre></li>
+         </ol>
+         <section>
+            <h3 class="topictitle3">Identifying/Creating a Group and at Least One User in that Group</h3>
+            <p>In this stage, we'll set the security to permit one or more specific groups to 
+               access Enterprise Vocabulary Net.
+               This group needs a name, which is configured within LDAP.
+               
+            </p>
+            <p>First we install the LDAP scripts and add a group and a user, 
+               remembering to configure the LDAP scripts first. With a different LDAP server, this step
+               will be different.
+               
+            </p><pre class="pre">
+keefe@keefetq:~$ sudo ldapaddgroup acme
+Error adding group acme to LDAP
+</pre><p>The error message shows that the LDAP scripts must be configured first:</p><pre class="pre">
+keefe@keefetq:~$ sudo gedit /etc/ldapscripts/ldapscripts.conf 
+keefe@keefetq:~$ sudo sh -c "echo -n 'monkey' &gt; /etc/ldapscripts/ldapscripts.passwd"
+keefe@keefetq:~$ sudo chmod 400 /etc/ldapscripts/ldapscripts.passwd
+keefe@keefetq:~$ sudo ldapaddgroup acme
+Successfully added group acme to LDAP
+keefe@keefetq:~$ sudo ldapadduser keefe acme 
+Successfully added user keefe to LDAP 
+keefe@keefetq:~$ sudo ldapsetpasswd keefe 
+Changing password for user uid=keefe,ou=people,dc=tqinc,dc=info
+New Password:
+Retype New Password:
+Successfully set password for user uid=keefe,ou=people,dc=tqinc,dc=info
+keefe@keefetq:~$
+</pre></section>
+      </section>
+      <hr>
+      <p class="footer" property="dc:rights">Copyright 2013 <a href="http://www.topquadrant.com">TopQuadrant</a>, Inc., All Rights Reserved.
+      </p>
+   </body>
+</html>

@@ -1,0 +1,626 @@
+<!DOCTYPE html><html xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]--><script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script><script type="text/javascript" src="http://www.topquadrant.com/docs/toc.js"></script><link href="http://www.topquadrant.com/docs/tqdoc.css" type="text/css" rel="stylesheet">
+      <title property="dc:title">TopBraid Live Installation Guide: TopBraid Live Installation</title>
+   </head>
+   <body>
+      <p><a href="index.html" class="containingBookLink">TopBraid Live Installation Guide</a></p>
+      <hr>
+      <h1>TopBraid Live Installation</h1>
+      <section id="introduction">
+         <p>TopBraid Live runs on Web Application servers that support the 2.4 release of the Java 
+            Servlet specification. The following sections detail specific instructions for running TBL on 
+            Tomcat.  Other application servers will have similar setups.  Therefore the following can be 
+            used as a general guide for installing TBL.
+         </p>
+      </section>
+      <section id="install">
+         <h2 class="topictitle2">Tomcat Installation Instructions</h2>
+         <p>Note that the current version of TopBraid Live is known to not work with Tomcat 7. </p>
+         <p>Installation instruction have changed for TBL 3.5.0. For previous version, please consult
+            the document in the download file. Open the index.html file in the top file created after
+            unzipping the download.
+         </p>
+         <p>The instructions give details for Tomcat, and may need variation depending on local 
+            	setup. The details vary with other Web Application Servers and between 
+            different versions of Tomcat. Manual editing of the <code>web.xml</code> file is no longer supported. The
+            following steps will create a correct <code>web.xml</code> file for TopBraid Live. Manual
+            edits made for other applications are outside of the scope of this document, and not supported by TopQuadrant.
+         </p>
+         <ol>
+            <li>
+               <p>Copy the downloaded zip archive file named <code>TopBraidLive[NNN].zip</code> to
+                  any location.
+               </p>
+               <p>The WAR file <code>tbl.war</code> included in the zip is to be deployed on the Web
+                  Application Server. These instructions assume you do not rename this file.
+               </p>
+            </li>
+            <li>
+               <p>Undeploy any current <code>tbl.war</code> instance.
+               </p>
+               <ul>
+                  <li>
+                     <p>If hot deploy is enabled, delete <code>tbl.war</code> from the deployment
+                        directory and Tomcat will do the rest. The file to delete will be:
+                     </p>
+                     <codeblock><code>$TOMCAT_HOME/webapps/tbl.war</code></codeblock>
+                     <p>These paths may be different if your Tomcat installation is configured with a
+                        different deployment directory.
+                     </p>
+                  </li>
+                  <li>
+                     <p>Without hot deploy, or if hot deploy fails, you may need to stop the server and
+                        then manually undeploy:
+                     </p>
+                     <p>For Tomcat, remove the following:</p>
+                     <ul>
+                        <li>
+                           <p><code>$TOMCAT_HOME/webapps/tbl.war</code></p>
+                        </li>
+                        <li>
+                           <p>the directory <code>$TOMCAT_HOME/webapps/tbl</code></p>
+                        </li>
+                        <li>
+                           <p>the directory <code>$TOMCAT_HOME/work/Catalina/<i>[server_name]</i>/</code>tbl
+                           </p>
+                        </li>
+                     </ul>
+                  </li>
+               </ul>
+            </li>
+            <li>
+               <p>In a separate terminal or window, open the log file for Tomcat in
+                  <code>$TOMCAT_HOME/logs/catalina.out</code>. This is the log file that prints
+                  startup messages for Tomcat.
+               </p>
+            </li>
+            <li>
+               <p>Copy <code>tbl.war</code> to the deployment directory of your application server,
+                  for example, <code>$TOMCAT_HOME/webapps</code>.
+               </p>
+            </li>
+            <li>
+               <p>Check the log file. At this stage, relevant messages will include:</p>
+               <codeblock>      INFO: Deploying web application archive tbl.war</codeblock>
+            </li>
+            <li>
+               <p>Open the TopBraid Live console by directing a browser to the TBL server being
+                  installed: 
+                  <code>http://<i>[Web-application-server-host]</i>:<i>[Web-application-server-port]</i>/tbl</code>.
+                  
+                  A window similar to the following will appear:
+                  	
+               </p><img src="img/TBLinitScreen.png" width="640"><ol>
+                  <li>
+                     <p>Fill in the details on this page and "Submit".</p>
+                  </li>
+                  <li>
+                     <p>A <code>web.xml</code> file will be generated and either displayed by your browser or saved to your local file system.
+                     </p>
+                  </li>
+               </ol>
+            </li>
+            <li>
+               <p>Stop Tomcat. Replace the <code>$TOMCAT_HOME/webapps/tbl/WEB-INF/web.xml</code>
+                  with the <code>web.xml</code> generated in the previous step.
+               </p>
+            </li>
+            <li>
+               <p>Start Tomcat.</p>
+            </li>
+         </ol>
+         <p>After these steps, the TopBraid Live console will appear and all TBL services will be in
+            working order
+         </p>
+         <section>
+            <h3>Accessing TopBraid Live</h3>
+            <p>For access to TBL's TopBraid Suite Console, send your browser to the URL
+               <code>http://<em>[Web-application-server-host]</em>:<em>[Web-application-server-port]</em>/tbl/tbl</code></p>
+            <p>This corresponds to TopBraid Composer ME's <code>http://localhost:8083/tbl/</code>.
+               
+            </p>
+            <p>On the first visit, TopBraid Live itself is initialized, and you should see entries like the following added to the log:
+               
+            </p><pre>org.topbraidlive.admin.servlets.TopLevel
+[TopBraid Info] org.topbraidlive.admin: TopBraid Live: Server started on Fri Jun 03 15:42:23 CDT 2013(org.topbraidlive.servletbridge.osgi.TBLPersonality)
+[TopBraid Info] org.topbraidlive.server: Privileged access: superuser  is granted to tomcat
+[TopBraid Info] org.topbraidlive.server: Privileged access: superrole is disabled.
+Jun 3, 2013 3:42:24 PM org.apache.catalina.startup.HostConfig deployDirectory
+INFO:Deploying web application directory docs
+Jun 3, 2013 3:42:24 PM org.apache.catalina.startup.HostConfig deployDirectory
+INFO: Deploying web application directory examples
+Jun 3, 2013 3:42:25 PM org.apache.catalina.startup.HostConfig deployDirectory
+INFO: Deploying web application directory ROOT
+Jun 3, 2013 3:42:25 PM org.apache.coyote.http11.Http11Protocol start
+INFO: Starting Coyote HTTP/1.1 on http-8080
+Jun 3, 2013 3:42:25 PM org.apache.jk.common.ChannelSocket init
+INFO: JK: ajp13 listening on /0.0.0.0:8009
+Jun 3, 2013 3:42:25 PM org.apache.jk.server.JkMain start
+INFO: Jk running ID=0 time=0/57  config=null
+Jun 3, 2013 3:42:25 PM org.apache.catalina.startup.Catalina start
+INFO: Server startup in 25944 ms
+</pre><p>If there are permission problems with the workspace, this step will not work.
+               
+            </p>
+            <p>If the workspace does not exist, or is an empty directory, it will be created
+               and populated.
+               
+            </p>
+            <p>The project <code>server.topbraidlive.org</code> and several others will be created in the workspace.  
+               If not, there were initialization problems and TopBraid Live will not work properly.
+               In a Linux installation, the most common source of problems are folder permissions for the process running the 
+               Web Application Server. Try removing the workspace folder and reloading <code>web.xml</code>, 
+               making sure that the process has write access to the parent folder of the workspace folder.
+               
+            </p>
+<!--
+            <section>
+               <h4>Final Test</h4>
+               <p>If everything is set up correctly, you should be able to navigate to the default 
+                  TopBraid Ensemble application using the kennedy family ontology with this URL:
+               </p>
+               <p><a href="http://localhost:8080/tbl/tbl/app/server.topbraidlive.org/dynamic/applications/Default%20Application%20(configurable).n3/-/server.topbraidlive.org/examples/kennedyfamily.owl" target="_blank">
+                     http://localhost:8080/tbl/tbl/app/server.topbraidlive.org/dynamic/applications/Default%20Application%20(configurable).n3/-/server.topbraidlive.org/examples/kennedyfamily.owl
+                     </a></p>
+            </section>
+-->
+         </section>
+         <section>
+            <h3>Upgrading TopBraid Live</h3>
+            <p>Execute the following steps to upgrade  TopBraid Live:</p>
+            <ol>
+               <li>
+                  <p>Make a copy of <code>$TOMCAT_HOME/webapps/tbl/WEB-INF/web.xml</code> where you can get it later.
+                  </p>
+               </li>
+               <li>
+                  <p>Delete <code>$TOMCAT_HOME/webapps/tbl.war</code>. If Hot Deploy is enabled, wait for Tomcat to remove the tbl folder. If not, then manually remove the folder and its contents. Make sure that <code>$TOMCAT_HOME/work/Catalina/[host-name]/tbl</code> and its contents have been removed.
+                  </p>
+               </li>
+               <li>
+                  <p>Copy <code>tbl.war</code> into the <code>$TOMCAT_HOME/webapps/</code> directory and allow Tomcat to create the <code>tbl</code> folder.
+                  </p>
+               </li>
+               <li>
+                  <p>Stop Tomcat.</p>
+               </li>
+               <li>
+                  <p>Copy the <code>web.xml</code> file saved from Step 1 into <code>$TOMCAT_HOME/webapps/tbl/WEB-INF/web.xml</code>.
+                  </p>
+               </li>
+               <li>
+                  <p> Start Tomcat.</p>
+               </li>
+            </ol>
+         </section>
+      </section>
+      <section>
+         <h2 class="topictitle2">Installation Instructions for Linux</h2>
+         <p>This section describes details and suggested configurations when using Linux as the base operating system
+            and Tomcat as the Web Application Server.
+            
+         </p>
+         <p>A suggested configuration for TopBraid Live is as follows: 
+            
+         </p>
+         <table>
+            <tbody>
+               <tr>
+                  <td>
+                     Operating Systems:
+                     
+                  </td>
+                  <td>
+                     Current version of Linux with 2.6 or higher kernel such as Red Hat 5 or Ubuntu 8.10
+                     
+                     
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     Java Runtime Environment:
+                     
+                  </td>
+                  <td>
+                     Java 6
+                     
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     Web Application Server
+                     
+                     
+                  </td>
+                  <td>
+                     <p>Must support 2.4 release of the Java Servlet specification.</p>
+                     <p>For example, Apache Tomcat 6.0 or IBM WebSphere 7.x.</p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>Permissions</td>
+                  <td>
+                     Full access to the Tomcat configuration area is required.
+                     Note: the Tomcat Application Manager is enabled by default, 
+                     and has the user name <code>admin</code> with no password.
+                     
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <p>TopBraid Live also requires that the <tt>nofile</tt> limit be increased as it opens a large number of JAR files,  and each TDB database also has a large number of files. The
+            default is 1024 open files and sockets. Reset this by adding the following two lines to the /etc/security/limits.conf configuration
+            file: 
+         </p><pre>
+tomcat6         soft    nofile          2048
+tomcat6         hard    nofile          8192
+</pre></section>
+      <section>
+         <h2 class="topictitle2">Installation Instructions for Windows 2003</h2>
+         <p>This section describes details and suggested configurations when using Windows 2003 as the base operating system
+            and Tomcat as the Web Application Server.
+         </p>
+         <p>A suggested configuration for TopBraid Live is as follows:
+            
+         </p>
+         <table>
+            <tbody>
+               <tr>
+                  <td>
+                     Operating Systems:
+                     
+                     
+                  </td>
+                  <td>
+                     <p>Windows 2003 Server, (e.g. R2 with SP2)</p>
+                     <p>Administrator access is required for installation.</p>
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     Java Runtime Environment:
+                     
+                  </td>
+                  <td>
+                     Java 6 update 21 or higher
+                     
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     Web Application Server
+                     
+                  </td>
+                  <td>
+                     <p>
+                        Must support 2.4 release of the Java Servlet specification.
+                     </p>
+                     <p>For example, Apache Tomcat 6.0.26</p>
+                     <p>For example, IBM WebSphere 7.x</p>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+         <p>Earlier versions of Java/Tomcat 6 are expected to work but are known to have memory leaks that may affect some TopBraid Live functions.</p>
+         <section>
+            <h3>Java Configuration</h3><img src="img/apache-java.jpg"><p>The picture shows the use of the Tomcat properties window, which is reached by launching
+               <code>tomcatw.exe</code>. The permanent generation options should be added
+               as shown, under <code>Java options:</code>. 
+               The memory options should be added under <code>Maximum memory pool:</code>.
+               This step is done before starting Tomcat.
+               
+            </p>
+         </section>
+         <section>
+            <h3>Active Directory Installation and Configuration</h3>
+            <p>These instructions cover the installation of Active Directory on a Windows 2003 Server (R2 with SP2).
+               
+            </p>
+            <p><strong>Install/Configure Active Directory</strong></p>
+            <ol>
+               <li>
+                  <p>Click the Windows Start button and select Run. Enter <strong>dcpromo</strong>, and then click OK.
+                  </p>
+               </li>
+               <li>
+                  <p>On the first page of the Active Directory Installation Wizard, click Next.
+                     If this is the first time you have installed Active Directory, you can click Active Directory Help
+                     to learn more about Active Directory before clicking Next.
+                     
+                  </p>
+               </li>
+               <li>
+                  <p>On the next page of the Active Directory Installation Wizard, click Next.</p>
+               </li>
+               <li>
+                  <p>On the Domain Controller Type page, click Domain Controller for a new domain, and then click Next.</p>
+               </li>
+               <li>
+                  <p>On the Create New Domain page, click Domain in a new forest, and then click Next.</p>
+               </li>
+               <li>
+                  <p>On the New Domain Name page, in the Full DNS name for new domain box, type the domain name (for example, <strong>tblive.tqinc.com</strong>) and then click Next.
+                  </p>
+               </li>
+               <li>
+                  <p>On the Database and Log Folders page, accept the defaults in the Database folder box and the Log folder box, and then click
+                     Next.
+                  </p>
+               </li>
+               <li>
+                  <p>On the Shared System Volume page, accept the default in the Folder location box, and then click Next.</p>
+               </li>
+               <li>
+                  <p>On the DNS Registration Diagnostics page, click Install and configure the DNS server on this computer and set this computer
+                     to use this DNS server as its preferred DNS Server. Click Next.
+                  </p>
+               </li>
+               <li>
+                  <p>On the Permissions page, click Permissions compatible only with Windows 2000 or Windows Server 2003 operating systems, and
+                     then click Next.
+                  </p>
+               </li>
+               <li>
+                  <p>On the Directory Services Restore Mode Administrator Password page, enter a password in the Restore Mode Password box, retype
+                     the password to confirm it in the Confirm password box, and then click Next.
+                     Consult your organization's security policy to ensure that the password you select meets your organization's security requirements.
+                  </p>
+               </li>
+               <li>
+                  <p>On the Summary page, confirm that the information is correct and click Next.</p>
+               </li>
+               <li>
+                  <p>When prompted to restart the computer, click Restart now.</p>
+               </li>
+               <li>
+                  <p>After the computer restarts, log on to the machine as a member of the Administrators group.</p>
+               </li>
+            </ol>
+         </section>
+      </section>
+      <!-- removed 2012-04-11 srh
+<section><h2 class="topictitle2">TopBraid Live web.xml Configuration</h2>
+<p>The <code>web.xml</code> file can be modified to:
+</p>
+<ul>
+<li><p>identify your preferred workspace location</p></li>
+<li><p>enable use of form-based authentication, LDAP or other user authentication mechanisms</p></li>
+<li><p>access advanced Equinox features</p></li>
+</ul>
+<p>These instructions for modifying the <code>web.xml</code> file
+are limited to cases where either
+hot deploy is enabled, or
+ one is using Tomcat as the Web Application Server,
+and the Tomcat Application Manager is enabled, and you know the user name and
+password (default user name: <code>admin</code>, with no password).
+In other cases, you will need to achieve the same effect (forcing a reload of
+the <code>web.xml</code> file) in some other way. Restarting the Web Application Server should
+normally be sufficient.
+</p>
+<section><h3>Workspace Location</h3>
+<p>In the <code>web.xml</code> file you can find the following XML:</p>
+<pre>&lt;init-param&gt;
+  &lt;param-name&gt;commandline&lt;/param-name&gt;
+
+  &lt;param-value&gt;-data <em>/var/lib/ontologies</em>&lt;/param-value&gt;			
+&lt;/init-param&gt;	
+</pre>
+<p>Modify <code><em>/var/lib/ontologies</em></code> to to the directory that will hold the default workspace 
+location: one approach
+is to specify a directory that does not exist, but whose parent directory
+does exist, and for which the Web Application Server has write-permission.
+</p></section></section> 
+-->
+      <section>
+         <h2 class="topictitle2">Configuring Authentication</h2>
+         <p>The web.xml file created in the <a href='#install'>Tomcat Installation Instructions</a> section contains configuration settings based on how  you filled out the form at installation. The <a href="ldap.html">LDAP Configuration</a> chapter of this installation guide has information on using TopBraid Live with the LDAP.</p>
+
+         <p>When you do configure TBL to use form-based authentication, accessing a page on a TBL server displays the following login screen:</p>
+
+<br><div class="imagecenter"><img class="imagecenter" src="img/login.jpg" alt=""/></div><br>
+
+<!--
+<p>After the user logs in, a link to information about the logged-in user and a link to log out will be in the upper-right of
+            all TopBraid Live and TopBraid Ensemble screens:
+         </p><br><div class="imagecenter"><img class="imagecenter" src="img/tbeScreenWithLogoutLink.jpg" width="480" alt=""/></div><br>
+-->
+
+<p>After using an application running with TBL and logging out, a screen will confirm that you have done so and give you the opportunity to log in again:</p><br><div class="imagecenter"><img class="imagecenter" src="img/logout.jpg" width="480" alt=""></div><br><section>
+            <h3>Reloading a modified web.xml</h3>
+            <p><strong>With Hot Deploy</strong></p>
+            <p>If hot deploy is enabled, then this step is already done.
+               A Tomcat log file will show something like the following: 
+               
+            </p><pre>March 23, 2013 2:13:23 PM org.apache.catalina.startup.HostConfig checkResources
+INFO: Undeploying context [/tbl]
+March 23, 2013 2:16:28 PM org.apache.catalina.startup.HostConfig deployWAR
+INFO: Deploying web application archive tbl.war
+osgi&gt; March 23, 2013 2:18:26 PM org.apache.catalina.startup.HostConfig checkResources
+INFO: Reloading context [/tbl]
+March 23, 2013 2:18:26 PM org.apache.catalina.core.StandardContext stop
+INFO: Container org.apache.catalina.core.ContainerBase.
+   [Catalina].[localhost].[/tbl] has not been started
+osgi&gt; March 23, 2013 2:18:29 PM org.apache.catalina.core.StandardContext start
+INFO: Container org.apache.catalina.core.ContainerBase.
+   [Catalina].[localhost].[/tbl] has already been started
+</pre><p>This may take a couple of minutes.</p>
+            <p>Other Web Application Servers will report the same behavior in different ways.
+               
+            </p>
+            <p><strong>Without Hot Deploy</strong></p>
+            <p>Go to the console for Tomcat or the equivalent if using another WebApplication Server. Find the <code>tbl</code> application and either <em>Reload</em> or <em>Stop</em> and then <em>start</em> the application. 
+            </p>
+         </section>
+      </section>
+      <section>
+         <h3>Migration from Earlier Releases</h3>
+<p>Migrating from releases 3.4 and above occurs automatically. </p>         
+         <p><strong>3.3.X Migration</strong></p>
+         <p>When migrating from release 3.3.X, TopQuadrant recommends adding the following to your <code>web.xml</code> file after the <tt>servlet-mapping</tt> element.
+         </p><pre>&lt;mime-mapping&gt;
+  &lt;extension&gt;ico&lt;/extension&gt;
+  &lt;mime-type&gt;image/x-icon&lt;/mime-type&gt;
+&lt;/mime-mapping&gt;
+
+</pre><p>(This can be found in the default <code>web.xml</code>.)
+         </p>
+         <p><strong>3.2.X Migration</strong></p>
+         <p>For customers migrating from 3.2.X or earlier
+            TopQuadrant support recommends the following change to existing <code>web.xml</code> files.
+            This change allows you to use new code that avoids
+            a possible deadlock.
+            Replace this existing line:
+            
+         </p><pre>
+  &lt;servlet-class&gt;org.eclipse.equinox.servletbridge.BridgeServlet&lt;/servlet-class&gt;
+</pre><p>with the following: 
+            
+         </p><pre>
+  &lt;servlet-class&gt;org.topbraidlive.servletbridge.webapplicationserver.BridgeServlet
+&lt;/servlet-class&gt;
+</pre><p>The deadlock intermittently occurs at shutdown and restart.
+            Without this change, TopBraid Live adds an error to the log on start-up,
+            to suggest that you should make the change. Apart from the later deadlock, the error
+            can be ignored. If the deadlock occurs, you will need to use operating system level facilities
+            to stop the Web Application Server—for example, <code>kill -KILL</code> on Linux.
+            The change above will prevent one particular deadlock that TopQuadrant support has investigated
+            in detail.
+            
+         </p>
+      </section>
+      <section>
+         <h3>Advanced Equinox Features</h3>
+         <p>Many other Equinox features can be accessed by adjusting the Equinox command line
+            or the <code>config.ini</code> file.  (See below for more on this.)
+            Many different options for Eclipse are 
+            <a href="http://help.eclipse.org/galileo/index.jsp?topic=/org.eclipse.platform.doc.isv/reference/misc/runtime-options.html" target="_blank">
+               documented</a>. Some of them may be useful in TopBraid Live. However,
+            very few have been tested. Please contact TopQuadrant support if you would like
+            more information about using any of these options with TopBraid Live.
+            
+         </p>
+         <p>The method for using an option is to modify the <code>commandline</code> parameter, as described in the section on
+            <a href="#N700B0">modifying the workspace location</a>.
+            
+         </p>
+         <p><strong>Modifying the Configuration Area</strong></p>
+         <p>Equinox, like Eclipse, uses a configuration area to store some system files.
+            By default this is created in a temporary area inside the Web Application Server.
+            It can be deleted and recreated using the Equinox redeploy option from the TopBraid Live Administration menu.
+            Using Tomcat, a possible path for the configuration area is:
+            
+         </p><pre>    
+    work/Catalina/localhost/tbl/eclipse/configuration/
+</pre><p>To use a configuration area other than the default it is necessary to modify <code>web.xml</code> and initialize the new configuration area. (This is done automatically if using the default configuration.)
+            
+         </p>
+         <p>Using a custom configuration area is useful if, for example:
+            
+         </p>
+         <ul>
+            <li>
+               <p>
+                  You wish to customize the initialization of the configuration.
+                  
+                  
+               </p>
+            </li>
+            <li>
+               <p>
+                  There are difficulties using the configuration area within the temporary files provided by the web application server. For
+                  example, a lock file is used in the configuration area, which is incompatible with certain NFS arrangements.
+                  
+               </p>
+            </li>
+         </ul>
+         <p>The Steps
+            
+         </p>
+         <ol>
+            <li>
+               Initialize New Config Area.
+               
+               <ol type="a">
+                  <li>
+                     <p>
+                        Create a new directory.
+                        
+                     </p>
+                  </li>
+                  <li>
+                     <p>
+                        Copy <code>webapps/tbl/WEB-INF/eclipse/configuration/config.ini</code> into the new directory
+                        .
+                     </p>
+                  </li>
+                  <li>
+                     <p>
+                        Verify that the permissions and owner are appropriate. (The process running the web application server must be able to both
+                        read and write the configuration area.)
+                        
+                     </p>
+                  </li>
+               </ol>
+            </li>
+            <li>
+               <p>
+                  Modify the <code>commandline</code> param of the TBL<code>web.xml</code> to include the 
+                  <code>-configuration</code> option pointing to the new directory. For example:
+                  
+                  
+               </p>
+            </li>
+         </ol><pre>
+      &lt;init-param&gt;
+         &lt;param-name&gt;commandline&lt;/param-name&gt;
+         &lt;param-value&gt;
+ -data /var/lib/ontologies
+ -configuration /var/lib/config320
+         &lt;/param-value&gt;
+
+     &lt;/init-param&gt;
+</pre><p>You will find a sample <code>web.xml</code> file with the name <code>web-config.xml</code> in the <code>installation</code> directory of your TopBraidLive distribution zip file. 
+            
+            
+         </p>
+      </section>
+      <section>
+         <h2 class="topictitle2">Configure Logging</h2>
+         <!-- original text from bug report 6795
+
+The correct setup is as follows: You may try changing  apache-tomcat-6.0.29/conf/logging.properties  perhaps by adding:  (change) handlers = 1catalina.org.apache.juli.FileHandler, 2localhost.org.apache.juli.FileHandler, 3manager.org.apache.juli.FileHandler, 4host-manager.org.apache.juli.FileHandler, 5tbl.org.apache.juli.FileHandler, java.util.logging.ConsoleHandler  5tbl.org.apache.juli.FileHandler.level = FINE 5tbl.org.apache.juli.FileHandler.directory = ${catalina.base}/logs 5tbl.org.apache.juli.FileHandler.prefix =tbl.  org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/tbl].level = INFO org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/tbl].handlers = 5tbl.org.apache.juli.FileHandler  and see if that improves things (e.g. tbl messages, including ones to do with startup problems, get sent to their own tomcat log file)
+
+-->
+         <p>If you encounter server startup problems, the following settings in Apache Tomcat's conf/logging.properties file can give
+            you a better picture of what's going on: 
+         </p><pre>
+handlers = 1catalina.org.apache.juli.FileHandler, 2localhost.org.apache.juli.FileHandler, 
+  3manager.org.apache.juli.FileHandler, 4host-manager.org.apache.juli.FileHandler, 
+  5tbl.org.apache.juli.FileHandler, java.util.logging.ConsoleHandler  
+5tbl.org.apache.juli.FileHandler.level = FINE 
+5tbl.org.apache.juli.FileHandler.directory = ${catalina.base}/logs
+5tbl.org.apache.juli.FileHandler.prefix =tbl.  
+org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/tbl].level = INFO 
+org.apache.catalina.core.ContainerBase.[Catalina].[localhost].[/tbl].handlers = 5tbl.org.apache.juli.FileHandler  
+</pre><p>Keep in mind that:</p>
+         <ul>
+            <li>
+               <p>The <tt>handlers</tt> setting would replace the existing one. It is shown as three lines above, but should be one line in your logging.properties
+                  file.
+               </p>
+            </li>
+            <li>
+               <p>TopBraid Live messages, including those related to startup issues, are sent to their own tomcat log file in <tt>$TOMCAT_HOME/logs/tbl.log</tt>.
+               </p>
+            </li>
+         </ul>
+      </section>
+      <hr>
+      <p class="footer" property="dc:rights">Copyright 2013 <a href="http://www.topquadrant.com">TopQuadrant</a>, Inc., All Rights Reserved.
+      </p>
+   </body>
+</html>

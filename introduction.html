@@ -1,0 +1,57 @@
+<!DOCTYPE html><html xmlns:dc="http://purl.org/dc/elements/1.1/">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+      <!--[if lt IE 9]>
+<script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]--><script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script><script type="text/javascript" src="http://www.topquadrant.com/docs/toc.js"></script><link href="http://www.topquadrant.com/docs/tqdoc.css" type="text/css" rel="stylesheet">
+      <title property="dc:title">Enterprise Vocabulary Net Installation Guide: Introduction to the Enterprise Vocabulary Net Enterprise Server</title>
+   </head>
+   <body>
+      <p><a href="index.html" class="containingBookLink">Enterprise Vocabulary Net Installation Guide</a></p>
+      <hr>
+      <h1>Introduction to the Enterprise Vocabulary Net Enterprise Server</h1>
+      <p>Enterprise Vocabulary Net (EVN) Enterprise Server is designed using Java servlet technology and deployed using a Web Application Server, also known as a
+         Servlet Container, 
+         	  such as Apache Tomcat or Oracle WebLogic.  Installation consists of deploying the WAR (Web Application Archive) file in
+         the application server.
+      </p>
+      <p>The WAR file is obtained by contacting TopQuadrant sales to receive the login/password for downloading the Enterprise Vocabulary Net install files.  
+         	The install files consist of  the WAR file for Enterprise Vocabulary Net (evn.war) and the EVN Installation Guide (this document).
+      </p>
+      <p>
+         The installation of Enterprise Vocabulary Net (EVN) is slightly different depending on both the operating system and Web Application Server. Detailed 
+         instructions for <a href="installation.html#tomcat-installation-instructions">Tomcat</a>, <a href="installation.html#installation-instructions-for-linux">Tomcat under Linux</a> and <a href="installation.html#installation-instructions-for-windows-2003">Tomcat under Windows Server 2003</a> are provided in the sections below.  In general, installation 
+         consists of:
+      </p>
+      <ol>
+         <li>
+            <p>Deploying the Enterprise Vocabulary Net WAR file in the application server.  For Tomcat, this involves copying the evn.war file to the Tomcat <tt>webapps</tt> 
+               directory, or using Tomcat Manager to deploy evn.war.
+            </p>
+         </li>
+         <li>
+            <p>(Optional) Setting the location of the EVN workspace.  By default, the workspace is set to /var/lib/ontologies.  Upon deployment 
+               		of the EVN application, library files will be written to this folder, including TopBraid (system library for TopBraid Suite features),
+               
+               		server.topbraidlive.org (EVN server files for sessions, etc.), and other TopBraid Suite features.  This folder will also contain all 
+               		projects uploaded to the server.  See <a href="installation.html#uploadsemwebapp">Uploading Semantic Applications and Data to Enterprise Vocabulary Net</a>.
+            </p>
+            <p>The location of the workspace can be changed by editing the <tt>init-param</tt> element in $APP_HOME/webapps/tbl/WEB-INF/web.xml, where $APP_HOME is 
+               		the home directory of the application server.
+            </p>
+            <p>If permissions for the user running the application server are insufficient to write to the /var/lib/ontologies folder, full
+               deployment of 
+               		Enterprise Vocabulary Net will not succeed.  Edit the web.xml to a folder with write permissions and re-start the application server.
+            </p>
+         </li>
+         <li>
+            <p>(Optional) Setting authentication and role-based access control through Tomcat or a LDAP server.  These are explained in more
+               detail throughout this document. 
+            </p>
+         </li>
+      </ol>
+      <hr>
+      <p class="footer" property="dc:rights">Copyright 2013 <a href="http://www.topquadrant.com">TopQuadrant</a>, Inc., All Rights Reserved.
+      </p>
+   </body>
+</html>
