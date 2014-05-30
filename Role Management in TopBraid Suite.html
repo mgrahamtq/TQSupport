@@ -1,0 +1,223 @@
+<p align="center">
+	<strong>Role Management in TopBraid Suite</strong>
+</p>
+<p align="center">
+	TopBraid Suite 4.4
+</p>
+<p>
+	1. Installation and Admin Setup.......................................................................... 2
+</p>
+<p>
+	1.1 Access to Server Administration Page................................................. 2
+</p>
+<p>
+	1.2 AdministratorGroup............................................................................. 2
+</p>
+<p>
+	2. The Role Management User Interface........................................................... 2
+</p>
+<p>
+	2.1 Defining New Groups.......................................................................... 3
+</p>
+<p>
+	2.2 Defining Asset Permissions.................................................................. 3
+</p>
+<p>
+	2.3 Associating Roles with Groups............................................................ 4
+</p>
+<p>
+	3. Getting Started............................................................................................... 5
+</p>
+<p>
+	4. Asset Permissions........................................................................................... 7
+</p>
+<p>
+	4.1 Asset Types.......................................................................................... 7
+</p>
+<p>
+	4.2 Defined ANY Asset Types.................................................................. 7
+</p>
+<p>
+	4.3 Access Types (CRUD+E).................................................................... 7
+</p>
+<p>
+	5. Suggested setup for TopBraid EVN................................................................. 8
+</p>
+<p>
+	<strong>Introduction</strong>
+</p>
+<p>
+	The TopBraid Role Management utility is found in the Server Administration page for all TopBraid server products. It provides a way to manage access
+	controls to TopBraid Assets such as graphs, files, Eclipse/Equinox projects, Web services, etc. Access control Groups are defined in Role Management to
+	define access rights to Assets and associate the Groups to Roles defined in Tomcat Realms, such LDAP, and LDAP/MS Active Directory, and Tomcat’s in-memory
+	user database (conf/tomcat-users.xml).
+</p>
+<table cellpadding="0" cellspacing="0" width="100%">
+	<tbody>
+		<tr>
+			<td>
+				<div>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	The overall access control design is depicted in the diagram below. Note that Roles and user associations with Roles are defined outside of TopBraid by
+	Tomcat Realm administration, such as LDAP/MS Active Directory.
+</p>
+<h1>
+	<a name="_Toc260381644">1. Installation and Admin Setup</a>
+</h1>
+<p>
+	Initial role setup occurs during installation. Please refer to the Installation guide for the TopBraid Suite product you are using (EVN, TBI, TopBraid
+	Live, etc.) – see for example http://www.topquadrant.com/docs/tbl/42install/installation.html.
+</p>
+<p>
+	For a Role to be used in a TopBraid server, the role must:
+</p>
+<p>
+	1) Be defined in a Tomcat Realm, such as LDAP, and
+</p>
+<p>
+	2) Appear in the Permitted security roles setup of the TopBraid (which define entries for security-constraint tags in the application’s web.xml).
+</p>
+<table cellpadding="0" cellspacing="0" width="100%">
+	<tbody>
+		<tr>
+			<td>
+				<div>
+					<p>
+						In-memory user database (e.g. conf/tomcat-users.xml)
+					</p>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<table cellpadding="0" cellspacing="0" width="100%">
+	<tbody>
+		<tr>
+			<td>
+				<div>
+					<p>
+						LDAP User Directory
+					</p>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	To define Roles in the Permitted security roles, enter a comma-delimited list of Roles in the TopBraid Deployment Descriptor Configuration Page during
+	installation. The following figures show the most common setups for LDAP and in-memory database (conf/tomcat-users.xml), where the role names in either
+	case are Role1, Role2 and Role3. Note that these roles are defined in LDAP/Tomcat and are not editable from within TopBraid.
+</p>
+<h2>
+	<a name="_Toc260381645">1.1 Access to Server Administration Page</a>
+</h2>
+<p>
+	Once installation is completed, the Server Administration page can be access by users associated with a Role with access to the asset ANY_ROLE. The Role
+	Management page is found at Server Administration &gt; Role Management.
+</p>
+<p>
+	This setup replaces the Superuser setting in versions of TopBraid Suite prior to version 4.4.
+</p>
+<h2>
+	<a name="_Toc260381646">1.2 AdministratorGroup</a>
+</h2>
+<p>
+	TopBraid Role Manager includes a default administrator group, named AdministratorGroup, which allows access to all assets. The group must be defined for at
+	least one Role to prevent being locked out of the system. By default, all Roles are defined to have this group.
+</p>
+<p>
+	To remove AdminstratorGroup for a specific role the user must define another role for the group. If AdministratorGroup is defined for at least one other
+	group it can be removed. However, if no other groups are associated with AdministratorGroup, it cannot be deleted.
+</p>
+<h1>
+	<a name="_Toc260381647">2. The Role Management User Interface</a>
+</h1>
+<table cellpadding="0" cellspacing="0" width="100%">
+	<tbody>
+		<tr>
+			<td>
+				<div>
+					<p align="center">
+						Role Management Views.
+					</p>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	The Role Management UI consists of two views: Role Management and Group Management. To navigate between them, click on the column name as shown in the
+	following figure.
+</p>
+<p>
+	Definitions for concepts appearing in this user interface are as follows:
+</p>
+<p>
+	<strong>Roles:</strong>
+	Roles are defined in LDAP/Tomcat and cannot be edited in this interface – a systems administrator will need to modify these using LDAP/AD,
+	tomcat-users.xml, etc. A Role can be associated with one or more Groups.
+</p>
+<p>
+	<strong>Groups</strong>
+	: A group is defined within TBS and it identifies a group of assets, their respective access types and role/s defined in a user directory that it maps to.
+</p>
+<p>
+	<strong>Asset</strong>
+	: An asset is an instance of a resource that can be uniquely identified within TBS. Example of an asset is graph, SM script, an exposed Web service, a file
+	etc. The approach controls access to individual asset or a group of assets.
+</p>
+<p>
+	<strong>Asset Permissions</strong>
+: Each asset type allows a set of asset permissions. These permission types are <strong><u>C</u></strong>reate, <strong><u>R</u></strong>ead,	<strong><u>U</u></strong>pdate, <strong><u>D</u></strong>elete and <strong><u>E</u></strong>xecute. E.g. for a graph CRUD access can be specified, for a SM
+	script CRUD+E are relevant whereas for an exposed Web service only E access is relevant.
+</p>
+<h2>
+	<a name="_Toc260381648">2.1 </a>
+	<table cellpadding="0" cellspacing="0" width="100%">
+		<tbody>
+			<tr>
+				<td>
+					<div>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	Defining New Groups
+</h2>
+<p>
+	To define a new group, click on the Groups column and click on the Add Group button. Provide a name as shown in in the figure. Groups can be associated
+	with one or more Asset with access permissions
+</p>
+<h2>
+	<a name="_Toc260381649"></a>
+	<a name="_Ref260315086">2.2 Defining Asset Permissions</a>
+</h2>
+<p>
+	Asset Permissions are defined with the Add Asset button on the Group Management view (1 in the figure). Asset Types are defined in Section 5. You can
+	choose a listed wildcard asset type <u>OR</u> click ‘next’ to choose from a list of specific assets. For example, click “Next&gt;” and the full set of
+	Eclipse/Equinox projects from the TopBraid workspace will be displayed (2 in the figure). In this example, which corresponds to a TopBraid EVN setup, the
+	default EVNProjects project name has been chosen. Upon choosing the asset type the Group Management view will display a set of permissions corresponding to
+	the aforementioned CRUD+E asset permissions. In this figure all asset permission have been chosen – meaning that any role assigned to the group EVN User
+	has access to all graphs and Web services defined for the project “EVNProjects” (3 in the figure).
+</p>
+<table cellpadding="0" cellspacing="0" width="100%">
+	<tbody>
+		<tr>
+			<td>
+				<div>
+					<p align="center">
+						Creating Asset Permissions.
+					</p>
+				</div>
+			</td>
+		</tr>
+	</tbody>
+</table>
+<p>
+	This corresponds to a suggested setup for TopBraid EVN where all users have access rights so that users with EVN “manager” roles (EVN User Roles) are free

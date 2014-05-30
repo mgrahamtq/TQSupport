@@ -1,0 +1,179 @@
+p>
+	All authentication issues for TopBraid Suite are handled by using standard J2EE Web container methods. Once inside the container, users are free to design
+	their own RBAC designs, such as TopBraid EVN's Vocabulary User Roles. Some of the details will depend on the authentication Realm set up for Tomcat - i.e.
+	LDAP, AD, etc. However, authentication is always a handshake between the entity requiring access and the Web container (e.g. Tomcat), not TopBraid Suite
+	applications.
+</p>
+<p>
+	Authentication works the same across all HTTP methods.
+</p>
+<p>
+	The following outlines some basic concepts and suggestions for handling authentication from user and services. There are a number of ways to support
+	authentication, and many organizations choose to build their own. Organization-specific IT policies will largely dictate interactions with the Web
+	container to authenticate users and services. Therefore, TopQuadrant can only play an advisory role for getting started with authentication issues
+</p>
+<p>
+	For more about authentication methods for J2EE, a good starting point is http://docs.oracle.com/javaee/1.4/tutorial/doc/Security5.html. The authentication
+	method is chosen in the initial Deployment Descriptor Configuration wizard (see xxxxxxxxxxx), which sets the login-config/auth-method element in the
+	web.xml file. Only one authentication form can be used per server. TopBraid supports Form, Basic and no authentication:
+</p>
+<p>
+	1) No Authentication. No user id or password is required to invoke services. This is useful for Linked Open Data applications and applications are are used
+	openly behind firewalls.
+</p>
+<p>
+	2) Form-based authentication. This is the best choice for all UI-based applications, such as EVN, TBI, and SWA/SWP-based applications. Form-based
+	authentication will display a form for entering authentication, pass the challenge to the authentication agent, and respond with the challenge result. On
+	logout, the user is logged out from the container.
+</p>
+<p>
+	3. Basic authentication. This should be used for access via 3rd party entities, such as Web services. It is not convenient for user-based authentication
+	because the user cannot log out of the system without closing the browser. It is recommended to use Basic authentication when the server is used for Web
+	services and an administrator needs to occasionally log in to perform maintenance.
+</p>
+<p>
+	A common enterprise architecture is to define one server with Form-based authentication for end-user access and a second server with Basic authentication
+	for access by Web services. In addition to utilizing the different authentication methods, this architecture facilitates balancing loads between user and
+	service-based access.
+</p>
+<p>
+	**End User Authentication**
+</p>
+<p>
+	If user log-in is required, then it is best to use Form authentication. In this case the application (TBL/EVN) controls the login and logout pages that are
+	displayed to the user. When a user logs out, they are logged out from the Web application container.
+</p>
+<p>
+	Some user information is cached in the /server.topbraidlive.org/dynamic/users.ttl file of the active TopBraid workspace. This information is passed to
+	TopBraid from the Web application container at login. Helper functions are available from any SPARQL context, including smf:currentUserName(),
+	smf:hasCurrentUser(), and smf:userWithName().
+</p>
+<p>
+	**Web Service Authentication**
+</p>
+<p>
+	Basic authentication should be used for access by Web services. Basic authentication relies on a Base64 encoded 'Authorization' header whose value consists
+	of the word 'Basic' followed by a space followed by the Base64 encoded name:password. This is better suited for service-only access because the only way a
+	user can log out is to shut down their browser. In this case, you can submit the URL with header information. Here's an example using cURL to access a
+	SPARQLMotion service named ‘DisplaySimpleHtml’ in TopBraid:
+</p>
+<p>
+	curl -H "Authorization: Basic c2NvdHQ6MTIzNDU=" -X POST "http://localhost:8080/evn/tbl/sparqlmotion?id=DisplaySimpleHtml"
+</p>
+<p>
+	GET works as well. The base 64 in the middle is "scott:12345".
+</p>
+<p>
+	curl -H "Authorization: Basic c2NvdHQ6MTIzNDU=" -X POST
+	"http://localhost:8080/evn/tbl/sparql?default-graph-uri=http://topbraid.org/examples/kennedys&amp;format=application/sparql-results+json&amp;query=SELECT
+	?s WHERE {?s a &lt;http://www.w3.org/2002/07/owl#Class&gt;}"
+</p>
+<p>
+	curl -H "Authorization: Basic c2NvdHQ6MTIzNDU=" -X POST "http://localhost:8080/evn/tbl/sparql?query=SELECT ?s WHERE { GRAPH
+	&lt;http://topbraid.org/examples/kennedys&gt;{?s a &lt;http://www.w3.org/2002/07/owl#Class&gt;}}"
+</p>
+<p>
+	http://localhost:8083/tbl/describe?_resource=http://topquadrant.com/ns/examples/geography#Japan&amp;_format=text%2Fturtle&amp;_base=http://topquadrant.com/ns/examples/geography
+</p>
+<p>
+	xxxxxxxxxxxxxxxx wget has a similar protocol. xxxxxxxxxxxxxxxx
+</p>
+<p>
+	For secure access, Web services should use https encryption.
+</p>
+<p>
+	Access using Form-based authentication, while not recommended, is possible using cookies generated by the server. One method is to respond to the challenge
+	with a hardcoded URL with a valid user id and password. The general form of this response is:
+</p>
+<p>
+	http://[host]:[port]/j_security_check?J_username=[username]&amp;j_password=[password]
+</p>
+<p>
+	Another method is to request a http cookie that can be used in subsequent requests. The following is an example script for accessing a TopBraid EVN
+	Form-based server. In summary the script a) requests a cookie, ‘init_cookie’, using GET or POST b) if login is successful, the client will receive a
+	cookie, ‘evn_cookie’ that is saved for use in subsequent requests, and c) uses the cookie to request TopBraid EVN services, such as the SPARQL endpoint
+	call in the example.
+</p>
+<p>
+	Assuming the following is defined in a file named ‘authenticateCallService.sh’:
+</p>
+<p>
+	——
+</p>
+<p>
+	#!/bin/bash
+</p>
+<p>
+	#The script needs the servername:portnumber, username and password respectively to work correctly.
+</p>
+<p>
+	if [[ $# -ne 3 ]] ; then
+</p>
+<p>
+	echo 'Invalid command. Please run authenticate script in following format ./authenticateCallService &lt;servername:port&gt; &lt;username&gt;
+	&lt;password&gt;'
+</p>
+<p>
+	exit 1
+</p>
+<p>
+	fi
+</p>
+<p>
+	curl -c ~/init_cookie -X POST "http://$1/evn/tbl" -D ~/firstReqHeaders &gt; /dev/null
+</p>
+<p>
+	#The server sends a new cookie as a response to this request. Use that cookie for subsequest requests.
+</p>
+<p>
+	curl -b ~/init_cookie -X POST "http://$1/evn/tbl/j_security_check" -H "Context-Type: application/x-www-form-urlencoded" --data
+	"j_username=$2&amp;j_password=$3" -L "http://$1/evn/tbl" -c ~/evn_cookie -D ~/secReqHeaders
+</p>
+<p>
+	curl -b ~/evn_cookie -X POST "http://$1/evn/tbl/sparql" -G --data-urlencode "query=SELECT * WHERE{?s a &lt;http://www.w3.org/2002/07/owl#Class&gt;} "
+	--data-urlencode "default-graph-uri=http://topbraid.org/examples/kennedys" --data "format=json" -D ~/thirdReqHeaders
+</p>
+<p>
+	——
+</p>
+<p>
+	The script can be invoked by the command:
+</p>
+<p>
+	./authenticateCallService &lt;servername:port&gt; &lt;username&gt; &lt;password&gt;
+</p>
+<p>
+	For secure access, Web services should use https encryption.
+</p>
+<p>
+	**RBAC in TopBraid**
+</p>
+<p>
+	TopBraid does not directly handle user authentication, which is performed by an authentication layer, such as LDAP or AD, the interacts with the Web
+	application container (Tomcat). Once a user has passed the authentication challenge from the Web application, the user id and roles are cached in TopBraid.
+	An important implication is that the TopBraid infrastructure cannot know about the existence of a user until they have successfully logged in to the Web
+	container.
+</p>
+<p>
+	Once a user has successfully passed authentication by the Web container, user information is cached in a file named
+	/server.topbridlive.org/dynamic/users.ttl int he TopBraid workspace. Useful SPARQL functions for access to user information accessible by TopBraid include
+	the following:
+</p>
+<p>
+	- smf:currentUserName: Gets the name of the user that is currently logged into TopBraid. Should be preceded by smf:hasCurrentUser to avoid exceptions.
+</p>
+<p>
+	- smf:userWithName: Converts a user name into a URI resource, following the default settings in TopBraid. Often used in conjunction with
+	smf:currentUserName().
+</p>
+<p>
+	- teamwork:currentUserHasPrivilege: Checks whether the currently logged in user has a given privilege, specified by a role property. The current user must
+	have that role or a sub-property thereof, for the given governed resource. The query will be executed on the given team graph.
+</p>
+<p>
+	Please see Help &gt; TopBraid Composer &gt; SPARQL Function Reference in TopBraid Composer for more information on these and other functions.
+</p>
+<p>
+	Note that there is no connection between TopBraid and LDAP/AD/other authentication systems. TopBraid simply caches some user information at login that can
+	be accessed by TopBraid solutions.
+</p>
